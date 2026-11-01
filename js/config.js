@@ -30,6 +30,9 @@ export const RECORD_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxvisfnu
 export const ILLUSTRATIONS = [];
 export const ILLUSTRATION_EXT = 'svg';
 
+// スタート画面のロゴ。ファイルがなければ何も表示しない。
+export const LOGO = 'assets/logo.png';
+
 // シェア画像の下部に入れる企画情報
 export const EVENT = {
   title: 'ずぼら16タイプ診断所',

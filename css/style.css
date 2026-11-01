@@ -94,6 +94,13 @@ body {
 }
 .start-head::before { width: 220px; height: 190px; background: var(--orange); top: 30px; right: -20px; opacity: .8; }
 .start-head::after { width: 150px; height: 130px; background: var(--blue); top: 160px; right: 120px; opacity: .9; }
+.start-logo {
+  display: block;
+  max-width: 60%;
+  max-height: 88px;
+  margin: 0 0 20px;
+  object-fit: contain;
+}
 .start-place { margin: 0 0 8px; font-size: 14px; color: var(--ink-soft); letter-spacing: .04em; }
 .start-title {
   margin: 0;

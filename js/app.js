@@ -2,7 +2,7 @@ import { QUESTIONS, PAGE_SIZE } from './questions.js';
 import { diagnose, questionOrder } from './logic.js';
 import { renderCard, canvasToBlob, ensureFonts } from './card.js';
 import { buildRecord, sendRecord } from './record.js';
-import { ILLUSTRATIONS, ILLUSTRATION_EXT } from './config.js';
+import { ILLUSTRATIONS, ILLUSTRATION_EXT, LOGO } from './config.js';
 
 const params = new URLSearchParams(location.search);
 const MODE = params.get('staff') === '1' ? 'staff' : 'self';
@@ -205,6 +205,13 @@ $('#btn-again').addEventListener('click', () => {
   clearSaved();
   show('start');
 });
+
+// ロゴは読み込めたときだけ出す（未配置でも壊れた画像を見せない）
+if (LOGO) {
+  const logo = $('#start-logo');
+  logo.addEventListener('load', () => { logo.hidden = false; }, { once: true });
+  logo.src = LOGO;
+}
 
 // 起動
 if (MODE === 'staff') $('.staff-flag').hidden = false;
