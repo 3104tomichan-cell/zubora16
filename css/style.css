@@ -149,7 +149,7 @@ body {
   background: var(--paper);
   border: 2px solid var(--line);
   border-radius: var(--radius);
-  padding: 22px 14px 14px;
+  padding: 22px 10px 14px;
   margin: 0 0 14px;
   transition: opacity .25s ease, border-color .25s ease;
   scroll-margin-top: 90px;
@@ -165,14 +165,14 @@ body {
 .q-text { margin: 0 6px 18px; font-size: 17px; line-height: 1.75; }
 .q-no { display: inline-block; min-width: 1.8em; color: var(--ink-soft); font-size: 14px; }
 
+/* 7つのマスを同じ幅にして、丸は必ずマスの中央・マスより小さく収める */
 .scale {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
   align-items: center;
-  justify-content: space-between;
 }
 .dot {
-  flex: 1 1 0;
-  min-width: 40px;
+  min-width: 0;
   height: 56px;
   padding: 0;
   border: 0;
@@ -185,8 +185,9 @@ body {
 .dot::before {
   content: '';
   display: block;
-  width: var(--d);
-  height: var(--d);
+  box-sizing: border-box;
+  width: min(calc(var(--k) * 100%), calc(var(--k) * 50px));
+  aspect-ratio: 1;
   border-radius: 50%;
   border: 3px solid var(--c);
   background: var(--paper);
@@ -197,18 +198,18 @@ body {
 .dot:focus-visible { outline: none; }
 .dot:focus-visible::before { box-shadow: 0 0 0 4px var(--blue); }
 
-/* 両端が大きく中央が小さい。左＝賛成（橙）、右＝反対（水色） */
-.dot[data-v='6'], .dot[data-v='0'] { --d: 42px; }
-.dot[data-v='5'], .dot[data-v='1'] { --d: 34px; }
-.dot[data-v='4'], .dot[data-v='2'] { --d: 27px; }
-.dot[data-v='3'] { --d: 20px; --c: var(--mid); }
+/* 両端が大きく中央が小さい（マスの幅に対する割合）。左＝賛成（橙）、右＝反対（水色） */
+.dot[data-v='6'], .dot[data-v='0'] { --k: .88; }
+.dot[data-v='5'], .dot[data-v='1'] { --k: .72; }
+.dot[data-v='4'], .dot[data-v='2'] { --k: .57; }
+.dot[data-v='3'] { --k: .42; --c: var(--mid); }
 .dot[data-v='6'], .dot[data-v='5'], .dot[data-v='4'] { --c: var(--orange-deep); }
 .dot[data-v='2'], .dot[data-v='1'], .dot[data-v='0'] { --c: var(--blue-deep); }
 
 .scale-labels {
   display: flex;
   justify-content: space-between;
-  padding: 2px 4px 0;
+  padding: 2px 2px 0;
   font-size: 13px;
 }
 .scale-labels .agree { color: #D98A4E; }
