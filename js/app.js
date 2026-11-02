@@ -2,6 +2,7 @@ import { QUESTIONS, PAGE_SIZE } from './questions.js';
 import { diagnose, questionOrder } from './logic.js';
 import { renderCard, canvasToBlob, ensureFonts } from './card.js';
 import { buildRecord, sendRecord } from './record.js';
+import { createFall, demoSources } from './fall.js';
 import { ILLUSTRATIONS, ILLUSTRATION_EXT, LOGO } from './config.js';
 
 const params = new URLSearchParams(location.search);
@@ -37,9 +38,17 @@ function clearSaved() {
   try { sessionStorage.removeItem(STORE_KEY); } catch { /* 無視 */ }
 }
 
+// スタート画面の背景演出。イラストがなければ何もしない（?demo=1 で仮の絵）
+const fallSources = params.get('demo') === '1'
+  ? demoSources()
+  : ILLUSTRATIONS.map((id) => `assets/types/${id}.${ILLUSTRATION_EXT}`);
+const fall = createFall($('#fall-layer'), fallSources);
+
 function show(name) {
   for (const [k, el] of Object.entries(screens)) el.hidden = k !== name;
   window.scrollTo(0, 0);
+  if (name === 'start') fall.start();
+  else fall.stop();
 }
 
 function answeredCount() {

@@ -119,6 +119,31 @@ body {
   font-size: 14px;
 }
 
+/* 落ちてくるイラスト。見出しの文字より下、背景の飾りより上に重ねる */
+.fall-layer {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+.fall-item {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  cursor: grab;
+  will-change: transform;
+}
+.fall-item.is-held { cursor: grabbing; filter: drop-shadow(0 6px 8px rgba(91, 70, 54, .18)); }
+.start-head { pointer-events: none; }
+.start-logo, .start-place, .start-title { position: relative; z-index: 1; }
+#start .sheet { position: relative; z-index: 1; }
+
 /* 進捗 */
 .progress {
   position: sticky;
