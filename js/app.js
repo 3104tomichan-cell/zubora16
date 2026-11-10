@@ -20,7 +20,7 @@ const screens = { start: $('#start'), quiz: $('#quiz'), result: $('#result') };
 const list = $('#questions');
 const tpl = $('#tpl-question');
 
-let state = null; // { order, answers, page }
+let state = null; // { order, answers, page, nick }
 let resultBlob = null;
 let resultUrl = null;
 
@@ -130,13 +130,18 @@ list.addEventListener('click', (e) => {
 });
 
 function startQuiz() {
-  state = { order: questionOrder({ fixed: MODE === 'staff' }), answers: {}, page: 0 };
+  // ニックネームは端末の中だけで使う。記録先には送らない（record.js には渡さない）
+  const nick = $('#nickname').value.replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, 10);
+  state = { order: questionOrder({ fixed: MODE === 'staff' }), answers: {}, page: 0, nick };
   save();
   show('quiz');
   renderPage();
 }
 
 $('#btn-start').addEventListener('click', startQuiz);
+$('#nickname').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); startQuiz(); }
+});
 
 $('#btn-back').addEventListener('click', () => {
   if (state.page === 0) return;
@@ -179,7 +184,7 @@ async function showResult() {
   $('#result-wait').hidden = false;
   img.removeAttribute('src');
 
-  const canvas = await renderCard(result, illustrationUrl(result.type.id));
+  const canvas = await renderCard(result, illustrationUrl(result.type.id), state.nick || '');
   resultBlob = await canvasToBlob(canvas);
   if (resultUrl) URL.revokeObjectURL(resultUrl);
   resultUrl = URL.createObjectURL(resultBlob);
@@ -211,6 +216,7 @@ $('#btn-share').addEventListener('click', async () => {
 
 $('#btn-again').addEventListener('click', () => {
   state = null;
+  $('#nickname').value = '';
   clearSaved();
   show('start');
 });

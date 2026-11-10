@@ -165,7 +165,7 @@ function drawStat(ctx, x, y, w, h, bg, label, value, unit) {
 }
 
 // result: { type, zuboraPercent, deviation }, imageUrl: イラストの URL（なければ null）
-export async function renderCard(result, imageUrl) {
+export async function renderCard(result, imageUrl, nick = '') {
   await ensureFonts();
   const img = await loadImage(imageUrl);
   const animal = ANIMALS[result.type.animal];
@@ -199,7 +199,9 @@ export async function renderCard(result, imageUrl) {
 
   ctx.fillStyle = C.ink;
   ctx.font = font(500, 40);
-  ctx.fillText('あなたのずぼらタイプは', cx, 222);
+  const lead = nick ? `${nick}さんのずぼらタイプは` : 'あなたのずぼらタイプは';
+  fitFont(ctx, lead, 500, 40, 28, 800);
+  ctx.fillText(lead, cx, 222);
 
   // タイプ名＋「です」を1行で中央に置く
   const name = result.type.name;

@@ -111,6 +111,23 @@ body {
 }
 .start-body .lead { margin: 0; font-size: 17px; line-height: 1.9; }
 .start-body .note { margin: 16px 0 24px; }
+.nick { display: block; margin: 0 0 22px; }
+.nick-label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--ink-soft); }
+.nick-input {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  padding: 0 20px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 17px; /* 16px未満だと iPhone が入力時に拡大する */
+}
+.nick-input::placeholder { color: #BFAF9E; }
+.nick-input:focus { outline: none; border-color: var(--blue-deep); background: var(--paper); }
+.nick-note { display: block; margin-top: 8px; font-size: 12px; color: var(--ink-soft); }
 .staff-flag {
   margin: -8px 0 20px;
   padding: 8px 14px;
