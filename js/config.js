@@ -25,10 +25,10 @@ export const ZUBORA_BASE = 10;
 // 回答の記録先（Google Apps Script のウェブアプリの URL）。空なら記録しない。
 export const RECORD_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxvisfnuhw1GRnsxjgtwrRsMuwxJYWWa9SUpEUs3E1ELSkiQhYj2SOyhGl3EWql_zHW/exec';
 
-// イラストを置いたタイプの ID。assets/types/{id}.svg を読みに行く。
-// 例：['01', '05']
-export const ILLUSTRATIONS = [];
-export const ILLUSTRATION_EXT = 'svg';
+// イラストを置いたタイプの ID。assets/types/{id}.{拡張子} を読みに行く。
+export const ILLUSTRATIONS = ['01', '02', '03', '04', '05', '06', '07', '08',
+  '09', '10', '11', '12', '13', '14', '15', '16'];
+export const ILLUSTRATION_EXT = 'webp';
 
 // スタート画面のロゴ。ファイルがなければ何も表示しない。
 export const LOGO = 'assets/logo.png';

@@ -3,7 +3,7 @@
 
 const COUNT_MAX = 9;
 const SPEED = [22, 40]; // px/秒
-const SIZE = [64, 96]; // px
+const SIZE = [72, 104]; // px
 const STIFFNESS = 90; // バネの強さ
 const DAMPING = 16; // 減衰（大きいほど揺れずに戻る）
 
@@ -39,7 +39,9 @@ export function createFall(layer, sources) {
     const speed = rand(...SPEED);
     it.vx = Math.cos(angle) * speed;
     it.vy = Math.sin(angle) * speed;
-    it.spin = rand(-12, 12); // 度/秒
+    it.sway = rand(6, 11); // 揺れ幅（度）
+    it.swaySpeed = rand(0.6, 1.1); // 揺れの速さ（ラジアン/秒）
+    it.phase = rand(0, Math.PI * 2);
     it.x = it.hx;
     it.y = it.hy;
     it.dx = 0; // バネの速度
@@ -53,7 +55,7 @@ export function createFall(layer, sources) {
     el.src = src;
     el.alt = '';
     el.draggable = false;
-    const it = { el, size: rand(...SIZE), rot: rand(-20, 20), mode: 'fall', pointer: null };
+    const it = { el, size: rand(...SIZE), rot: 0, mode: 'fall', pointer: null };
     el.style.width = `${it.size}px`;
     el.addEventListener('pointerdown', (e) => grab(it, e));
     el.addEventListener('pointermove', (e) => drag(it, e));
@@ -95,7 +97,8 @@ export function createFall(layer, sources) {
       if (!reduced) {
         it.hx += it.vx * dt;
         it.hy += it.vy * dt;
-        it.rot += it.spin * dt;
+        it.phase += it.swaySpeed * dt;
+        it.rot = Math.sin(it.phase) * it.sway; // 回り続けず、左右にゆらゆら揺れる
       }
       if (it.mode === 'fall') {
         it.x = it.hx;
