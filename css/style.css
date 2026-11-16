@@ -138,8 +138,12 @@ body {
 
 /* 落ちてくるイラスト。見出しの文字より下、背景の飾りより上に重ねる */
 .fall-layer {
-  position: fixed;
-  inset: 0;
+  /* 白いカードより上の、見出しのまわりだけを流れる（カードの後ろに隠れないように） */
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -16px;
+  right: -16px;
   overflow: hidden;
   z-index: 0;
   pointer-events: none;
