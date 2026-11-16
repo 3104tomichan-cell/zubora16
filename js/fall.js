@@ -1,7 +1,7 @@
 // スタート画面の背景で、イラストが左上から右下へゆっくり落ちてくる演出。
 // 指でつまんで動かせる。離すと、触られなかった場合にいたはずの位置（落下の軌道上）へバネのように戻る。
 
-const COUNT_MAX = 5;
+const COUNT_MAX = 2; // 画面に同時に出る最大枚数
 const SPEED = [12, 22]; // px/秒
 const SIZE = [72, 104]; // px
 const STIFFNESS = 90; // バネの強さ
@@ -47,6 +47,13 @@ export function createFall(layer, sources) {
     it.dx = 0; // バネの速度
     it.dy = 0;
     it.mode = 'fall';
+    // 出てくるたびに、いま出ていない別の絵に替える
+    if (!first && sources.length > 2) {
+      const shown = new Set(items.filter((o) => o !== it).map((o) => o.src));
+      const pool = sources.filter((u) => !shown.has(u) && u !== it.src);
+      it.src = pool[Math.floor(Math.random() * pool.length)];
+      it.el.src = it.src;
+    }
   }
 
   function make(src) {
@@ -55,7 +62,7 @@ export function createFall(layer, sources) {
     el.src = src;
     el.alt = '';
     el.draggable = false;
-    const it = { el, size: rand(...SIZE), rot: 0, mode: 'fall', pointer: null };
+    const it = { el, src, size: rand(...SIZE), rot: 0, mode: 'fall', pointer: null };
     el.style.width = `${it.size}px`;
     el.addEventListener('pointerdown', (e) => grab(it, e));
     el.addEventListener('pointermove', (e) => drag(it, e));
@@ -132,7 +139,8 @@ export function createFall(layer, sources) {
   function start() {
     if (running || !items.length) return;
     if (!placed && layer.clientWidth > 0) {
-      items.forEach((it) => respawn(it, true));
+      // 1枚目は画面の中から、残りは画面の外から入ってくる（同時に出る枚数を抑える）
+      items.forEach((it, i) => respawn(it, i === 0));
       placed = true;
     }
     running = true;
