@@ -2,7 +2,7 @@
 // 指でつまんで動かせる。離すと、触られなかった場合にいたはずの位置（落下の軌道上）へバネのように戻る。
 
 const COUNT_MAX = 2; // 画面に同時に出る最大枚数
-const SPEED = [12, 22]; // px/秒
+const SPEED = [22, 40]; // px/秒
 const SIZE = [72, 104]; // px
 const STIFFNESS = 90; // バネの強さ
 const DAMPING = 16; // 減衰（大きいほど揺れずに戻る）
