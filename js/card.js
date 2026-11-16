@@ -241,9 +241,8 @@ export async function renderCard(result, imageUrl, nick = '') {
   ctx.textAlign = 'center';
   ctx.fillStyle = C.inkSoft;
   ctx.font = font(500, 26);
-  ctx.fillText(EVENT.place, cx, 1246);
-  ctx.font = font(500, 22);
-  ctx.fillText('※この偏差値は推定分布に基づく簡易的なものです', cx, 1280);
+  ctx.fillText(EVENT.place, cx, 1262);
+  // 偏差値の但し書きは画像には入れず、結果画面の文字（画像の下）にだけ残している
 
   return canvas;
 }
