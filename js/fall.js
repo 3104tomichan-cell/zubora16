@@ -1,8 +1,8 @@
 // スタート画面の背景で、イラストが左上から右下へゆっくり落ちてくる演出。
 // 指でつまんで動かせる。離すと、触られなかった場合にいたはずの位置（落下の軌道上）へバネのように戻る。
 
-const COUNT_MAX = 9;
-const SPEED = [22, 40]; // px/秒
+const COUNT_MAX = 5;
+const SPEED = [12, 22]; // px/秒
 const SIZE = [72, 104]; // px
 const STIFFNESS = 90; // バネの強さ
 const DAMPING = 16; // 減衰（大きいほど揺れずに戻る）
@@ -39,9 +39,9 @@ export function createFall(layer, sources) {
     const speed = rand(...SPEED);
     it.vx = Math.cos(angle) * speed;
     it.vy = Math.sin(angle) * speed;
-    it.sway = rand(6, 11); // 揺れ幅（度）
-    it.swaySpeed = rand(0.6, 1.1); // 揺れの速さ（ラジアン/秒）
-    it.phase = rand(0, Math.PI * 2);
+    // 画面を横切る間にちょうど1回転する（時計回り）
+    it.spin = (360 * speed) / (Math.hypot(w, h) + 2 * s); // 度/秒
+    it.rot = rand(-15, 15);
     it.x = it.hx;
     it.y = it.hy;
     it.dx = 0; // バネの速度
@@ -97,8 +97,7 @@ export function createFall(layer, sources) {
       if (!reduced) {
         it.hx += it.vx * dt;
         it.hy += it.vy * dt;
-        it.phase += it.swaySpeed * dt;
-        it.rot = Math.sin(it.phase) * it.sway; // 回り続けず、左右にゆらゆら揺れる
+        it.rot += it.spin * dt;
       }
       if (it.mode === 'fall') {
         it.x = it.hx;
