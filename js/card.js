@@ -1,7 +1,7 @@
 // 結果の一枚絵（1080×1350）を Canvas で描く。シェア画像も兼ねる。
 // 回答内容や個人を特定できる情報は載せない。URL も載せない。
 import { ANIMALS } from './types.js';
-import { EVENT } from './config.js';
+import { EVENT, LOGO } from './config.js';
 
 export const W = 1080;
 export const H = 1350;
@@ -168,6 +168,7 @@ function drawStat(ctx, x, y, w, h, bg, label, value, unit) {
 export async function renderCard(result, imageUrl, nick = '') {
   await ensureFonts();
   const img = await loadImage(imageUrl);
+  const logo = await loadImage(LOGO);
   const animal = ANIMALS[result.type.animal];
 
   const canvas = document.createElement('canvas');
@@ -193,15 +194,21 @@ export async function renderCard(result, imageUrl, nick = '') {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'alphabetic';
 
+  // 上部：ロゴ（あれば）と企画名
+  if (logo) {
+    const lh = 84;
+    const lw = (logo.width / logo.height) * lh;
+    ctx.drawImage(logo, cx - lw / 2, 68, lw, lh);
+  }
   ctx.fillStyle = C.inkSoft;
-  ctx.font = font(500, 30);
-  ctx.fillText(EVENT.title, cx, 140);
+  ctx.font = font(500, logo ? 28 : 30);
+  ctx.fillText(EVENT.title, cx, logo ? 192 : 140);
 
   ctx.fillStyle = C.ink;
   ctx.font = font(500, 40);
   const lead = nick ? `${nick}さんのずぼらタイプは` : 'あなたのずぼらタイプは';
   fitFont(ctx, lead, 500, 40, 28, 800);
-  ctx.fillText(lead, cx, 222);
+  ctx.fillText(lead, cx, logo ? 244 : 222);
 
   // タイプ名＋「です」を1行で中央に置く
   const name = result.type.name;
@@ -213,9 +220,9 @@ export async function renderCard(result, imageUrl, nick = '') {
   const startX = cx - (nameW + gap + desuW) / 2;
   ctx.textAlign = 'left';
   ctx.font = font(700, nameSize);
-  ctx.fillText(name, startX, 330);
+  ctx.fillText(name, startX, 336);
   ctx.font = font(500, 40);
-  ctx.fillText('です', startX + nameW + gap, 330);
+  ctx.fillText('です', startX + nameW + gap, 336);
 
   drawIllustration(ctx, img, animal, 220, 380, 640, 390);
 
