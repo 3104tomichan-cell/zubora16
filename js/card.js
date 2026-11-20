@@ -237,12 +237,7 @@ export async function renderCard(result, imageUrl, nick = '') {
   const lh = 50;
   lines.slice(0, 5).forEach((l, i) => ctx.fillText(l, 130, 1032 + i * lh));
 
-  // 下部
-  ctx.textAlign = 'center';
-  ctx.fillStyle = C.inkSoft;
-  ctx.font = font(500, 26);
-  ctx.fillText(EVENT.place, cx, 1262);
-  // 偏差値の但し書きは画像には入れず、結果画面の文字（画像の下）にだけ残している
+  // 画像の下部には何も入れない（会場・日付は依頼者の指示で外した。偏差値の但し書きは結果画面の文字にだけ残す）
 
   return canvas;
 }
