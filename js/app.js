@@ -176,7 +176,7 @@ function illustrationUrl(typeId) {
 
 async function showResult() {
   const result = diagnose(state.answers);
-  sendRecord(buildRecord({ answers: state.answers, result, mode: MODE, test: TEST }));
+  sendRecord(buildRecord({ answers: state.answers, result, mode: MODE, test: TEST, nick: state.nick || '' }));
   clearSaved();
 
   show('result');

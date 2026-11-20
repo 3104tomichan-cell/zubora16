@@ -1,7 +1,8 @@
-// 匿名の回答記録。失敗しても診断には影響させない。
+// 回答の記録。失敗しても診断には影響させない。
 // 記録するもの：生の回答（0〜6、逆転前）、各軸の得点、ずぼら度の素点、タイプID、
-// アプリのバージョン、入力方法、ランダムなセッションID。時刻は受け取る側で10分単位に丸める。
-// 記録しないもの：氏名・連絡先・SNSアカウント・端末固有のID。
+// アプリのバージョン、入力方法、ランダムなセッションID、ニックネーム（任意。入力欄で本名を入れないよう案内）。
+// 時刻は受け取る側で10分単位に丸める。
+// 記録しないもの：連絡先・SNSアカウント・端末固有のID。
 import { APP_VERSION, RECORD_ENDPOINT } from './config.js';
 
 function randomId() {
@@ -11,7 +12,7 @@ function randomId() {
   return [...a].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-export function buildRecord({ answers, result, mode, test }) {
+export function buildRecord({ answers, result, mode, test, nick = '' }) {
   return {
     v: APP_VERSION,
     sid: randomId(),
@@ -21,6 +22,7 @@ export function buildRecord({ answers, result, mode, test }) {
     axes: result.axes,
     zRaw: result.zuboraRaw,
     type: result.type.id,
+    nick: String(nick).slice(0, 10),
   };
 }
 

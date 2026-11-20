@@ -6,7 +6,7 @@ const IDS = [
   'A1-1', 'A1-2', 'A1-3', 'A2-1', 'A2-2', 'A2-3', 'A3-1', 'A3-2', 'A3-3', 'A4-1', 'A4-2', 'A4-3',
   'Z-1', 'Z-2', 'Z-3', 'Z-4', 'Z-5', 'Z-6', 'Z-7', 'Z-8', 'Z-9', 'Z-10', 'Z-11', 'Z-12', 'Z-13', 'Z-14', 'Z-15',
 ];
-const HEADER = ['受信時刻（10分単位）', 'version', 'session', 'mode', 'test', 'type', 'zRaw', 'A1', 'A2', 'A3', 'A4'].concat(IDS);
+const HEADER = ['受信時刻（10分単位）', 'version', 'session', 'mode', 'test', 'type', 'zRaw', 'A1', 'A2', 'A3', 'A4'].concat(IDS).concat(['nickname']);
 const SHEET_NAME = '回答';
 
 // 最初に一度だけ実行する。記録用のスプレッドシートを作り、ID を保存する。
@@ -34,7 +34,10 @@ function doPost(e) {
     lock.waitLock(10000);
     try {
       const id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
-      SpreadsheetApp.openById(id).getSheetByName(SHEET_NAME).appendRow(row);
+      const sheet = SpreadsheetApp.openById(id).getSheetByName(SHEET_NAME);
+      // 2026/11/20 にニックネーム列を足した。古い見出し行にも列名を入れておく
+      if (sheet.getRange(1, HEADER.length).getValue() !== 'nickname') sheet.getRange(1, HEADER.length).setValue('nickname');
+      sheet.appendRow(row);
     } finally {
       lock.releaseLock();
     }
@@ -115,7 +118,7 @@ function deviationOf(zRaw) {
   return Math.round(Math.min(DEV.max, Math.max(DEV.min, t)) * 10) / 10;
 }
 
-// 1件ずつの一覧。名前などの個人情報は記録していないので出せない。
+// 1件ずつの一覧。ニックネームは来場者が入れた文字なので、必ず esc() してから表示する。
 function detailPage() {
   const id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
   const rows = SpreadsheetApp.openById(id).getSheetByName(SHEET_NAME).getDataRange().getDisplayValues().slice(1);
@@ -126,7 +129,8 @@ function detailPage() {
       const t = String(r[col('type')]).padStart(2, '0');
       const z = Number(r[col('zRaw')]);
       const axes = ['A1', 'A2', 'A3', 'A4'].map((a) => r[col(a)]).join(' / ');
-      return `<tr><td class="n">${i + 1}</td><td>${r[col('受信時刻（10分単位）')]}</td><td>${TYPE_NAMES[t] || t}</td>`
+      const nick = r[col('nickname')] || '';
+      return `<tr><td class="n">${i + 1}</td><td>${r[col('受信時刻（10分単位）')]}</td><td>${nick ? esc(nick) : '<span class="none">—</span>'}</td><td>${TYPE_NAMES[t] || t}</td>`
         + `<td class="n">${10 + z}%</td><td class="n">${deviationOf(z).toFixed(1)}</td><td class="n">${z}</td><td class="n">${axes}</td>`
         + `<td>${r[col('mode')] === 'staff' ? '紙' : 'スマホ'}</td></tr>`;
     })
@@ -139,10 +143,10 @@ body{margin:0;padding:16px;background:#FFF8EE;color:#5B4636;font-family:'Hiragin
 h1{font-size:20px;margin:0 0 4px}p{margin:0 0 12px;font-size:13px;color:#8F7B68}
 .wrap{overflow-x:auto;background:#FFFDF8;border-radius:14px;border:2px solid #F0E3D2}
 table{border-collapse:collapse;width:100%}th,td{padding:7px 8px;border-bottom:1px solid #F0E3D2;font-size:13px;white-space:nowrap;text-align:left}
-th{background:#FFDDBB;font-size:12px}td.n{text-align:right}</style></head><body>
+th{background:#FFDDBB;font-size:12px}td.n{text-align:right}.none{color:#BFAF9E}</style></head><body>
 <h1>ずぼら16タイプ診断所 回答一覧</h1>
-<p>${now} 時点・新しい順。名前は記録していないため表示されません。<br>軸の点数は「人目 / 範囲 / 未来 / 着手」（各0〜18点、10点以上で高い側）。</p>
-<div class="wrap"><table><tr><th>#</th><th>時刻</th><th>タイプ</th><th>ずぼら度</th><th>偏差値</th><th>素点</th><th>軸の点数</th><th>入力</th></tr>${list}</table></div>
+<p>${now} 時点・新しい順。ニックネームは11/20以降の回答から記録しています（空欄は未入力）。<br>軸の点数は「人目 / 範囲 / 未来 / 着手」（各0〜18点、10点以上で高い側）。</p>
+<div class="wrap"><table><tr><th>#</th><th>時刻</th><th>ニックネーム</th><th>タイプ</th><th>ずぼら度</th><th>偏差値</th><th>素点</th><th>軸の点数</th><th>入力</th></tr>${list}</table></div>
 </body></html>`;
   return HtmlService.createHtmlOutput(html).setTitle('ずぼら診断 回答一覧').addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
@@ -163,7 +167,17 @@ function toRow(d) {
     String(d.type || '').slice(0, 4),
     Number(d.zRaw),
     Number(axes.A1), Number(axes.A2), Number(axes.A3), Number(axes.A4),
-  ].concat(answers);
+  ].concat(answers).concat([cleanNick(d.nick)]);
+}
+
+// ニックネームは10文字まで。= + - @ で始まると数式として扱われるので、先頭に ' を付けて文字として保存する
+function cleanNick(v) {
+  const t = String(v || '').replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, 10);
+  return /^[=+\-@]/.test(t) ? "'" + t : t;
+}
+
+function esc(v) {
+  return String(v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
 function text(s) {
