@@ -45,12 +45,15 @@ function doPost(e) {
 }
 
 // 動作確認用（ブラウザで URL を開くと ok と出る）
-// ?view=summary を付けると、タイプ別の人数の集計ページを返す（&test=1 で動作確認の回答も含める）
+// ?view=summary を付けると、タイプ別の人数の集計ページを返す
 function doGet(e) {
   const p = (e && e.parameter) || {};
-  if (p.view === 'summary') return summaryPage(p.test === '1');
+  if (p.view === 'summary') return summaryPage();
   return text('ok');
 }
+
+// 集計から除く回答（開発時の動作確認）。それ以外は test の印があっても本番として数える（2026/11/20 依頼者の指示）
+const EXCLUDE_SIDS = ['setup-check', '613cabda-eb02-4950-9870-0fcf0e2d305c'];
 
 const TYPE_NAMES = {
   '01': '陰で頑張るリス', '02': '完全防御型リス', '03': '発信系リス', '04': '直進型リス',
@@ -62,19 +65,16 @@ const TYPE_NAMES = {
 const TYPE_IDS = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16'];
 
 // 集計だけを返す。個々の回答の中身は出さない。
-function summaryPage(includeTest) {
+function summaryPage() {
   const id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
   const rows = SpreadsheetApp.openById(id).getSheetByName(SHEET_NAME).getDataRange().getValues().slice(1);
   const col = (name) => HEADER.indexOf(name);
   const counts = {};
   TYPE_IDS.forEach((k) => { counts[k] = 0; });
   let total = 0;
-  let testCount = 0;
   let zSum = 0;
   rows.forEach((r) => {
-    const isTest = r[col('test')] === true || r[col('test')] === 'TRUE';
-    if (isTest) testCount++;
-    if (isTest && !includeTest) return;
+    if (EXCLUDE_SIDS.includes(String(r[col('session')]))) return;
     const t = String(r[col('type')]).padStart(2, '0');
     if (!(t in counts)) return;
     counts[t]++;
@@ -98,10 +98,9 @@ td{padding:7px 8px;border-bottom:1px solid #F0E3D2;font-size:14px;white-space:no
 td.bar{width:40%}td.bar span{display:block;height:12px;border-radius:6px;background:#EFA46A}
 a{color:#5E9DBE}</style></head><body>
 <h1>ずぼら16タイプ診断所 集計</h1>
-<p>${now} 時点${includeTest ? '（動作確認の回答を含む）' : '（動作確認の回答を除く）'}。ページを再読み込みすると最新になります。</p>
+<p>${now} 時点。ページを再読み込みすると最新になります。</p>
 <div class="box"><div>回答数<b>${total}</b></div><div>平均ずぼら度<b>${total ? Math.round(zSum / total) : '-'}%</b></div></div>
 <table>${list}</table>
-<p style="margin-top:12px">動作確認の回答：${testCount}件　<a href="${ScriptApp.getService().getUrl()}?view=summary${includeTest ? '' : '&test=1'}" target="_top">${includeTest ? '本番の回答だけ表示' : '動作確認の回答も含めて表示'}</a></p>
 </body></html>`;
   return HtmlService.createHtmlOutput(html)
     .setTitle('ずぼら診断 集計')

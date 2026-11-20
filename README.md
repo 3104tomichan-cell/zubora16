@@ -56,4 +56,5 @@ node --test
   `clasp create-deployment -i AKfycbxvisfnuhw1GRnsxjgtwrRsMuwxJYWWa9SUpEUs3E1ELSkiQhYj2SOyhGl3EWql_zHW -d "説明"`
   （新しいデプロイを作ると URL が変わるので、`config.js` の `RECORD_ENDPOINT` も直す）
 
-- タイプ別の集計ページ：記録先のURLの末尾に `?view=summary` を付けて開く（`&test=1` で動作確認の回答も含める）。個々の回答は表示しない
+- タイプ別の集計ページ：記録先のURLの末尾に `?view=summary` を付けて開く。個々の回答は表示しない
+- 2026年は依頼者の指示で、`test` の印に関係なく全回答を数える（開発時の動作確認2件だけ `gas/Code.js` の `EXCLUDE_SIDS` で除外）。来年、偏差値の基準を作り直すときも同じ扱いにする
