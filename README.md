@@ -55,3 +55,5 @@ node --test
 - コードを変えたら `cd gas && clasp push --force` のあと、既存のデプロイを更新する：
   `clasp create-deployment -i AKfycbxvisfnuhw1GRnsxjgtwrRsMuwxJYWWa9SUpEUs3E1ELSkiQhYj2SOyhGl3EWql_zHW -d "説明"`
   （新しいデプロイを作ると URL が変わるので、`config.js` の `RECORD_ENDPOINT` も直す）
+
+- タイプ別の集計ページ：記録先のURLの末尾に `?view=summary` を付けて開く（`&test=1` で動作確認の回答も含める）。個々の回答は表示しない
