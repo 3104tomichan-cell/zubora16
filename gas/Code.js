@@ -49,6 +49,7 @@ function doPost(e) {
 function doGet(e) {
   const p = (e && e.parameter) || {};
   if (p.view === 'summary') return summaryPage();
+  if (p.view === 'detail') return detailPage();
   return text('ok');
 }
 
@@ -105,6 +106,45 @@ a{color:#5E9DBE}</style></head><body>
   return HtmlService.createHtmlOutput(html)
     .setTitle('ずぼら診断 集計')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+// 偏差値の基準（アプリの js/config.js の DEVIATION と同じ値にしておくこと）
+const DEV = { mean: 45, sd: 20, min: 20, max: 80 };
+function deviationOf(zRaw) {
+  const t = 50 + (10 * (zRaw - DEV.mean)) / DEV.sd;
+  return Math.round(Math.min(DEV.max, Math.max(DEV.min, t)) * 10) / 10;
+}
+
+// 1件ずつの一覧。名前などの個人情報は記録していないので出せない。
+function detailPage() {
+  const id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
+  const rows = SpreadsheetApp.openById(id).getSheetByName(SHEET_NAME).getDataRange().getDisplayValues().slice(1);
+  const col = (name) => HEADER.indexOf(name);
+  const list = rows
+    .filter((r) => !EXCLUDE_SIDS.includes(String(r[col('session')])))
+    .map((r, i) => {
+      const t = String(r[col('type')]).padStart(2, '0');
+      const z = Number(r[col('zRaw')]);
+      const axes = ['A1', 'A2', 'A3', 'A4'].map((a) => r[col(a)]).join(' / ');
+      return `<tr><td class="n">${i + 1}</td><td>${r[col('受信時刻（10分単位）')]}</td><td>${TYPE_NAMES[t] || t}</td>`
+        + `<td class="n">${10 + z}%</td><td class="n">${deviationOf(z).toFixed(1)}</td><td class="n">${z}</td><td class="n">${axes}</td>`
+        + `<td>${r[col('mode')] === 'staff' ? '紙' : 'スマホ'}</td></tr>`;
+    })
+    .reverse()
+    .join('');
+  const now = Utilities.formatDate(new Date(), 'Asia/Tokyo', 'M/d HH:mm');
+  const html = `<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ずぼら診断 回答一覧</title><style>
+body{margin:0;padding:16px;background:#FFF8EE;color:#5B4636;font-family:'Hiragino Maru Gothic ProN','Hiragino Sans','Noto Sans JP',sans-serif}
+h1{font-size:20px;margin:0 0 4px}p{margin:0 0 12px;font-size:13px;color:#8F7B68}
+.wrap{overflow-x:auto;background:#FFFDF8;border-radius:14px;border:2px solid #F0E3D2}
+table{border-collapse:collapse;width:100%}th,td{padding:7px 8px;border-bottom:1px solid #F0E3D2;font-size:13px;white-space:nowrap;text-align:left}
+th{background:#FFDDBB;font-size:12px}td.n{text-align:right}</style></head><body>
+<h1>ずぼら16タイプ診断所 回答一覧</h1>
+<p>${now} 時点・新しい順。名前は記録していないため表示されません。<br>軸の点数は「人目 / 範囲 / 未来 / 着手」（各0〜18点、10点以上で高い側）。</p>
+<div class="wrap"><table><tr><th>#</th><th>時刻</th><th>タイプ</th><th>ずぼら度</th><th>偏差値</th><th>素点</th><th>軸の点数</th><th>入力</th></tr>${list}</table></div>
+</body></html>`;
+  return HtmlService.createHtmlOutput(html).setTitle('ずぼら診断 回答一覧').addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
 function toRow(d) {
