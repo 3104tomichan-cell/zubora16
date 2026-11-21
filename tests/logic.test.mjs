@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { QUESTIONS, LAST_ID, PAPER_ORDER, PAGE_SIZE } from '../js/questions.js';
 import { TYPES } from '../js/types.js';
+import { AXIS_THRESHOLD } from '../js/config.js';
 import {
   score, diagnose, typeFromAxes, zuboraPercent, deviation, questionOrder, isHigh,
 } from '../js/logic.js';
@@ -72,6 +73,9 @@ test('同点（9点）は低得点側、10点から高得点側', () => {
   assert.equal(isHigh(10), true);
   assert.equal(isHigh(0), false);
   assert.equal(isHigh(18), true);
+  // 範囲（A2）だけ 13 点から高得点側
+  assert.equal(isHigh(12, 'A2'), false);
+  assert.equal(isHigh(13, 'A2'), true);
   // 全部3点 → 全軸9点 → 全軸が低得点側 → 止まる×全方位＝コアラ、全開×改善なし
   assert.equal(diagnose(all(3)).type.name, 'ノーガードコアラ');
 });
@@ -87,7 +91,9 @@ test('16タイプすべてに到達でき、資料の表どおりの名前にな
   const seen = new Set();
   for (const [key, name] of Object.entries(expected)) {
     const [hide, improve, stray, focus] = key.split('').map((c) => c === '1');
-    const axes = { A1: hide ? 10 : 9, A3: improve ? 10 : 9, A4: stray ? 10 : 9, A2: focus ? 10 : 9 };
+    // 各軸の判定ラインちょうど（高）と、その1点下（低）
+    const at = (axis, high) => AXIS_THRESHOLD[axis] - (high ? 0 : 1);
+    const axes = { A1: at('A1', hide), A3: at('A3', improve), A4: at('A4', stray), A2: at('A2', focus) };
     const t = typeFromAxes(axes);
     assert.equal(t.name, name, key);
     seen.add(t.id);

@@ -145,7 +145,7 @@ h1{font-size:20px;margin:0 0 4px}p{margin:0 0 12px;font-size:13px;color:#8F7B68}
 table{border-collapse:collapse;width:100%}th,td{padding:7px 8px;border-bottom:1px solid #F0E3D2;font-size:13px;white-space:nowrap;text-align:left}
 th{background:#FFDDBB;font-size:12px}td.n{text-align:right}.none{color:#BFAF9E}</style></head><body>
 <h1>ずぼら16タイプ診断所 回答一覧</h1>
-<p>${now} 時点・新しい順。ニックネームは11/20以降の回答から記録しています（空欄は未入力）。<br>軸の点数は「人目 / 範囲 / 未来 / 着手」（各0〜18点、10点以上で高い側）。</p>
+<p>${now} 時点・新しい順。ニックネームは11/20以降の回答から記録しています（空欄は未入力）。<br>軸の点数は「人目 / 範囲 / 未来 / 着手」（各0〜18点。人目・未来・着手は10点以上、範囲は11/21昼から13点以上で高い側）。</p>
 <div class="wrap"><table><tr><th>#</th><th>時刻</th><th>ニックネーム</th><th>タイプ</th><th>ずぼら度</th><th>偏差値</th><th>素点</th><th>軸の点数</th><th>入力</th></tr>${list}</table></div>
 </body></html>`;
   return HtmlService.createHtmlOutput(html).setTitle('ずぼら診断 回答一覧').addMetaTag('viewport', 'width=device-width, initial-scale=1');

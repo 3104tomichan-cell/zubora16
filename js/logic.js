@@ -26,8 +26,8 @@ export function score(answers) {
   return { axes, zuboraRaw };
 }
 
-export function isHigh(axisScore) {
-  return axisScore >= AXIS_THRESHOLD;
+export function isHigh(axisScore, axis = 'A1') {
+  return axisScore >= AXIS_THRESHOLD[axis];
 }
 
 export function findType({ hide, improve, stray, focus }) {
@@ -39,10 +39,10 @@ export function findType({ hide, improve, stray, focus }) {
 
 export function typeFromAxes(axes) {
   return findType({
-    hide: isHigh(axes.A1),
-    focus: isHigh(axes.A2),
-    improve: isHigh(axes.A3),
-    stray: isHigh(axes.A4),
+    hide: isHigh(axes.A1, 'A1'),
+    focus: isHigh(axes.A2, 'A2'),
+    improve: isHigh(axes.A3, 'A3'),
+    stray: isHigh(axes.A4, 'A4'),
   });
 }
 
