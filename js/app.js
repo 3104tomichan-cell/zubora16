@@ -3,7 +3,7 @@ import { diagnose, questionOrder } from './logic.js';
 import { renderCard, canvasToBlob, ensureFonts } from './card.js';
 import { buildRecord, sendRecord, flushQueue } from './record.js';
 import { createFall, demoSources } from './fall.js';
-import { ILLUSTRATIONS, ILLUSTRATION_EXT, LOGO, VOTE_URL } from './config.js';
+import { ILLUSTRATIONS, ILLUSTRATION_EXT, LOGO } from './config.js';
 
 const params = new URLSearchParams(location.search);
 const MODE = params.get('staff') === '1' ? 'staff' : 'self';
@@ -116,10 +116,7 @@ function renderPage() {
     list.append(li);
   });
   $('#btn-back').hidden = state.page === 0;
-  const last = state.page === PAGES - 1;
-  const vote = last && VOTE_URL && MODE !== 'staff';
-  $('#btn-next').textContent = vote ? '投票して結果を見る' : last ? '結果を見る' : '次へ';
-  $('#vote-first').hidden = !vote;
+  $('#btn-next').textContent = state.page === PAGES - 1 ? '結果を見る' : '次へ';
   updateProgress();
   focusNext({ scroll: false });
 }
@@ -176,14 +173,6 @@ $('#btn-next').addEventListener('click', () => {
     renderPage();
     window.scrollTo(0, 0);
     return;
-  }
-  // 結果の前に投票ページを別タブで開く。この画面では結果を作っておき、戻ってきたら見られるようにする
-  // （同じタブで移ると、戻り方がわからない人が結果を見られなくなるため）。開けなくても結果は出す
-  if (VOTE_URL && MODE !== 'staff') {
-    try {
-      const w = window.open(VOTE_URL, '_blank');
-      if (w) w.opener = null;
-    } catch { /* 開けなくても続ける */ }
   }
   showResult();
 });

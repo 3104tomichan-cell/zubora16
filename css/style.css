@@ -270,16 +270,6 @@ body {
 .scale-labels .agree { color: #D98A4E; }
 .scale-labels .disagree { color: #5E9DBE; }
 
-.vote-first {
-  margin: 18px 0 0;
-  padding: 12px 16px;
-  border-radius: 16px;
-  background: var(--blue);
-  font-size: 14px;
-  line-height: 1.7;
-  text-wrap: pretty;
-}
-.vote-first b { color: #3F7FA0; }
 .pager {
   display: grid;
   grid-template-columns: 1fr 2fr;
