@@ -299,6 +299,20 @@ body {
   margin: 0;
   color: var(--ink-soft);
 }
+/* 会場でのお願い（シール集計とエピソード） */
+.venue-ask {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-radius: var(--radius);
+  background: var(--paper);
+  border: 2px dashed var(--orange-deep);
+  font-size: 16px;
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+.venue-ask p { margin: 0; }
+.venue-ask p + p { margin-top: 8px; }
+.venue-ask b { color: #C9692A; }
 .result-actions { margin-top: 20px; text-align: center; }
 .result-actions .btn-sub { margin-top: 24px; }
 
