@@ -7,7 +7,7 @@ export const QUESTIONS = [
   { id: 'A1-3', axis: 'A1', reverse: true, text: '自分の失敗談を話すことに抵抗はない' },
 
   { id: 'A2-1', axis: 'A2', reverse: false, text: '自分の興味分野には努力を惜しまない' },
-  { id: 'A2-2', axis: 'A2', reverse: false, text: '好きな人に会うためなら、面倒なことでも頑張れる' },
+  { id: 'A2-2', axis: 'A2', reverse: false, text: '好きな人に会うためなら、どんなに面倒なことでも頑張れる' },
   { id: 'A2-3', axis: 'A2', reverse: true, text: '興味のないことにも熱意を持って取り組む' },
 
   { id: 'A3-1', axis: 'A3', reverse: false, text: '何かの節目ごとに、自分の生活についての目標を立てがちだ' },
@@ -15,7 +15,7 @@ export const QUESTIONS = [
   { id: 'A3-3', axis: 'A3', reverse: true, text: '「ずぼら」は自分の持ち味であって、弱みではない' },
 
   // 軸4は A4-1 と A4-3 が「止まる」側で逆転、A4-2 が「逸れる」側で正転
-  { id: 'A4-1', axis: 'A4', reverse: true, text: '何かを始めようとする前に、仮眠を取ることが多い' },
+  { id: 'A4-1', axis: 'A4', reverse: true, text: '何かを始めようとする前に、とりあえずだらけることが多い' },
   { id: 'A4-2', axis: 'A4', reverse: false, text: 'やらないといけないことは、始めないというより始めても集中できないタイプだ' },
   { id: 'A4-3', axis: 'A4', reverse: true, text: '気づいたら何も手を付けないまま深夜になっていることがよくある' },
 
