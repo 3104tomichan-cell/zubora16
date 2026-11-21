@@ -6,14 +6,12 @@
   <meta name="theme-color" content="#FFF8EE">
   <meta name="robots" content="noindex">
   <title>ずぼら16タイプ診断所</title>
-  <link rel="preload" href="fonts/ZenMaru-500.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/ZenMaru-700.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <main class="wrap">
 
-    <section id="start" class="screen" hidden>
+    <section id="start" class="screen">
       <div class="start-head">
         <div class="fall-layer" id="fall-layer" aria-hidden="true"></div>
         <img class="start-logo" id="start-logo" alt="ずぼらのメガネ" hidden>
@@ -29,7 +27,8 @@
           <span class="nick-note">結果の画像に表示され、回答といっしょに記録されます。</span>
         </label>
         <p class="staff-flag" hidden>スタッフ入力モード（紙と同じ順番）</p>
-        <button type="button" class="btn btn-main" id="btn-start">はじめる</button>
+        <button type="button" class="btn btn-main" id="btn-start" disabled>読み込み中…</button>
+        <p class="boot-help" id="boot-help" hidden>うまく始まらないときは、ページを再読み込みしてください。<br>それでもだめなら、Safari か Chrome で開き直してください。</p>
       </div>
     </section>
 
@@ -80,6 +79,11 @@
     </li>
   </template>
 
-  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/app.min.js?v=2026.0.4"></script>
+  <script nomodule>document.getElementById('boot-help').hidden = false;</script>
+  <script>
+    // 通信が混んでいて読み込みが終わらないときの案内（起動したら app が消す）
+    setTimeout(function () { if (!window.zuboraReady) document.getElementById('boot-help').hidden = false; }, 8000);
+  </script>
 </body>
 </html>

@@ -42,7 +42,14 @@ function clearSaved() {
 const fallSources = params.get('demo') === '1'
   ? demoSources()
   : ILLUSTRATIONS.map((id) => `assets/types/${id}.${ILLUSTRATION_EXT}`);
-const fall = createFall($('#fall-layer'), fallSources);
+// 落ちてくるイラストは、ページの読み込みが終わってから用意する（混雑時に診断本体の読み込みを邪魔しない）
+let fall = { start() {}, stop() {} };
+function initFall() {
+  fall = createFall($('#fall-layer'), fallSources);
+  if (!screens.start.hidden) fall.start();
+}
+if (document.readyState === 'complete') setTimeout(initFall, 300);
+else window.addEventListener('load', () => setTimeout(initFall, 300), { once: true });
 
 function show(name) {
   for (const [k, el] of Object.entries(screens)) el.hidden = k !== name;
@@ -238,3 +245,8 @@ if (state) {
 } else {
   show('start');
 }
+const startBtn = $('#btn-start');
+startBtn.disabled = false;
+startBtn.textContent = 'はじめる';
+$('#boot-help').hidden = true;
+window.zuboraReady = true;

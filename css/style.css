@@ -78,6 +78,7 @@ body {
 .btn-main { background: var(--orange); box-shadow: 0 4px 0 #EBC59E; }
 .btn-main:active { box-shadow: 0 1px 0 #EBC59E; transform: translateY(3px); }
 .btn-sub { background: transparent; border: 2px solid var(--line); color: var(--ink-soft); }
+.btn:disabled { opacity: .6; cursor: default; }
 .btn:focus-visible { outline: 3px solid var(--blue-deep); outline-offset: 3px; }
 
 /* スタート */
@@ -128,6 +129,7 @@ body {
 .nick-input::placeholder { color: #BFAF9E; }
 .nick-input:focus { outline: none; border-color: var(--blue-deep); background: var(--paper); }
 .nick-note { display: block; margin-top: 8px; font-size: 12px; color: var(--ink-soft); }
+.boot-help { margin: 14px 0 0; font-size: 14px; color: #C9692A; text-wrap: pretty; }
 .staff-flag {
   margin: -8px 0 20px;
   padding: 8px 14px;
