@@ -313,6 +313,12 @@ body {
 .venue-ask p { margin: 0; }
 .venue-ask p + p { margin-top: 8px; }
 .venue-ask b { color: #C9692A; }
+/* 駒場祭公式サイトの企画ページ（投票）へのリンク */
+.vote { margin-top: 14px; text-align: center; }
+.vote p { margin: 0 0 10px; font-size: 16px; }
+.vote b { color: #5E9DBE; }
+.btn-vote { display: flex; align-items: center; justify-content: center; text-decoration: none; background: var(--blue); box-shadow: 0 4px 0 #B5D8EA; }
+.btn-vote:active { box-shadow: 0 1px 0 #B5D8EA; transform: translateY(3px); }
 .result-actions { margin-top: 20px; text-align: center; }
 .result-actions .btn-sub { margin-top: 24px; }
 
