@@ -28,6 +28,7 @@ function setup() {
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
+    if (data && data.kind === 'boot') return logBoot(data);
     const row = toRow(data);
     if (!row) return text('ignored');
     const lock = LockService.getScriptLock();
@@ -178,6 +179,33 @@ function cleanNick(v) {
 
 function esc(v) {
   return String(v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// 8秒たってもアプリが起動しなかった端末からの報告（2026/11/21 追加）。OS とブラウザの種類だけで、個人は特定しない
+const BOOT_SHEET = '起動できなかった記録';
+function logBoot(d) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const ss = SpreadsheetApp.openById(PropertiesService.getScriptProperties().getProperty('SHEET_ID'));
+    let sheet = ss.getSheetByName(BOOT_SHEET);
+    if (!sheet) {
+      sheet = ss.insertSheet(BOOT_SHEET);
+      sheet.appendRow(['受信時刻（10分単位）', 'version', 'OS', 'ブラウザ', 'module対応', 'エラー']);
+      sheet.setFrozenRows(1);
+    }
+    const t = new Date();
+    t.setMinutes(Math.floor(t.getMinutes() / 10) * 10, 0, 0);
+    const clean = (v, n) => { const x = String(v == null ? '' : v).replace(/[\u0000-\u001f\u007f]/g, '').slice(0, n); return /^[=+\-@]/.test(x) ? "'" + x : x; };
+    sheet.appendRow([
+      Utilities.formatDate(t, 'Asia/Tokyo', 'yyyy-MM-dd HH:mm'),
+      clean(d.v, 20), clean(d.os, 30), clean(d.app, 20), d.module === true,
+      clean((Array.isArray(d.errs) ? d.errs : []).join(' | '), 400),
+    ]);
+  } finally {
+    lock.releaseLock();
+  }
+  return text('ok');
 }
 
 function text(s) {

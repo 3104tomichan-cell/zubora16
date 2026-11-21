@@ -1,7 +1,7 @@
 import { QUESTIONS, PAGE_SIZE } from './questions.js';
 import { diagnose, questionOrder } from './logic.js';
 import { renderCard, canvasToBlob, ensureFonts } from './card.js';
-import { buildRecord, sendRecord } from './record.js';
+import { buildRecord, sendRecord, flushQueue } from './record.js';
 import { createFall, demoSources } from './fall.js';
 import { ILLUSTRATIONS, ILLUSTRATION_EXT, LOGO } from './config.js';
 
@@ -250,3 +250,14 @@ startBtn.disabled = false;
 startBtn.textContent = 'はじめる';
 $('#boot-help').hidden = true;
 window.zuboraReady = true;
+
+// 前に送れなかった記録を送り直す（電波が戻ったときにも）
+flushQueue();
+window.addEventListener('online', () => flushQueue());
+
+// 一度開いた端末は、電波が悪くても再読み込みや診断ができるようにする
+if ('serviceWorker' in navigator && window.isSecureContext) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }, { once: true });
+}

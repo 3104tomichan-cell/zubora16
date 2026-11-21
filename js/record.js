@@ -26,18 +26,49 @@ export function buildRecord({ answers, result, mode, test, nick = '' }) {
   };
 }
 
+// 送れなかった記録はこの端末に取っておき、次に開いたときや電波が戻ったときに送り直す
+const QUEUE_KEY = 'zubora-unsent';
+function readQueue() {
+  try { return JSON.parse(localStorage.getItem(QUEUE_KEY)) || []; } catch { return []; }
+}
+function writeQueue(q) {
+  try { localStorage.setItem(QUEUE_KEY, JSON.stringify(q.slice(-50))); } catch { /* 保存できなくても続ける */ }
+}
+
+function post(record, endpoint) {
+  // Apps Script は CORS の応答を返さないので、no-cors で送る（届いたかどうかの中身は見られない）
+  return fetch(endpoint, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(record),
+    keepalive: true,
+  });
+}
+
 export function sendRecord(record, endpoint = RECORD_ENDPOINT) {
   if (!endpoint) return;
   try {
-    // Apps Script は CORS の応答を返さないので、no-cors で送りっぱなしにする
-    fetch(endpoint, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(record),
-      keepalive: true,
-    }).catch(() => {});
+    post(record, endpoint).catch(() => {
+      // 通信できなかった（圏外など）。あとで送り直す
+      writeQueue(readQueue().concat([record]));
+    });
   } catch {
     // 何もしない
   }
+}
+
+let flushing = false;
+export function flushQueue(endpoint = RECORD_ENDPOINT) {
+  if (!endpoint || flushing) return;
+  const q = readQueue();
+  if (!q.length) return;
+  flushing = true;
+  writeQueue([]);
+  Promise.all(q.map((r) => post(r, endpoint).then(() => null, () => r)))
+    .then((left) => {
+      const rest = left.filter(Boolean);
+      if (rest.length) writeQueue(readQueue().concat(rest));
+    })
+    .finally(() => { flushing = false; });
 }
